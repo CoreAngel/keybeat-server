@@ -1,0 +1,3 @@
+[submodule "keybeat-libs"]
+	path = src/libs
+	url = git@github.com:CoreAngel/keybeat-libs.git
