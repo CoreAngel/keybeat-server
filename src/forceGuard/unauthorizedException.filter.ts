@@ -13,7 +13,7 @@ export class UnauthorizedExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
     const status = exception.getStatus();
-    const ip = request.ip;
+    const ip = request.clientIp;
     const type = exception.type;
 
     let actionsToBan = 15;
