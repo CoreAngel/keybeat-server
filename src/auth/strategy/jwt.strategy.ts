@@ -28,7 +28,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(request: Request, payload: TokenPayload) {
     const token = request.body['auth'];
-    const ip = request.ip;
+    const ip = request.clientIp;
 
     await this.forceGuardService.checkIsBaned(ip, ActionType.JWT);
 

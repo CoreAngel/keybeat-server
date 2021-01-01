@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpException, HttpStatus, Ip, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpException, HttpStatus, Patch, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/registerDto';
 import { LoginDto } from './dto/loginDto';
@@ -13,6 +13,7 @@ import { ResetToptDto } from './dto/resetToptDto';
 import { ForceGuardService } from '../forceGuard/forceGuard.service';
 import { ActionType } from '../forceGuard/actionType.enum';
 import { UnauthorizedException } from '../forceGuard/unauthorized.exception';
+import { IpAddress } from '../decorators/ipAddress.decorator';
 
 interface RegisterResponse {
   uri: string;
@@ -45,7 +46,7 @@ export class AuthController {
 
   @HttpCode(200)
   @Post('login')
-  async login(@Body() loginUser: LoginDto, @Ip() ip: string): Promise<LoginResponse> {
+  async login(@Body() loginUser: LoginDto, @IpAddress() ip: string): Promise<LoginResponse> {
     await this.forceGuardService.checkIsBaned(ip, ActionType.LOGIN);
 
     const user = await this.authService.verifyUser(loginUser.login);
@@ -78,7 +79,11 @@ export class AuthController {
   @UseGuards(JwtGuard)
   @HttpCode(200)
   @Patch('reset/password')
-  async resetPassword(@User() user: UserEntity, @Body() resetDto: ResetPasswordDto, @Ip() ip: string): Promise<void> {
+  async resetPassword(
+    @User() user: UserEntity,
+    @Body() resetDto: ResetPasswordDto,
+    @IpAddress() ip: string,
+  ): Promise<void> {
     await this.forceGuardService.checkIsBaned(ip, ActionType.RESET_PASSWORD);
 
     const isMatching = await this.authService.verifyPassword(resetDto.password, user.password);
@@ -93,7 +98,7 @@ export class AuthController {
 
   @HttpCode(200)
   @Patch('reset/2fa')
-  async reset2Fa(@Body() resetDto: ResetToptDto, @Ip() ip: string): Promise<RegisterResponse> {
+  async reset2Fa(@Body() resetDto: ResetToptDto, @IpAddress() ip: string): Promise<RegisterResponse> {
     await this.forceGuardService.checkIsBaned(ip, ActionType.RESET_2FA);
 
     const user = await this.authService.verifyUser(resetDto.login);
