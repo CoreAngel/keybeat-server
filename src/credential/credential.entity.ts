@@ -8,9 +8,6 @@ export class CredentialEntity {
   @Column()
   public userId: number;
 
-  @Column()
-  public iv: string;
-
   @Column({ type: 'text' })
   public data: string;
 

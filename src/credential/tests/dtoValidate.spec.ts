@@ -9,12 +9,10 @@ describe('Dto Credential Validate', () => {
     it('valid data', async () => {
       const addCredentialDto = new AddCredentialDto();
       addCredentialDto.id = 1;
-      addCredentialDto.iv = 'iv';
       addCredentialDto.data = 'data';
 
       const addCredentialDto2 = new AddCredentialDto();
       addCredentialDto2.id = 2;
-      addCredentialDto2.iv = 'iv';
       addCredentialDto2.data = 'data';
 
       const addCredentialArrayDto = new AddCredentialArrayDto();
@@ -40,7 +38,6 @@ describe('Dto Credential Validate', () => {
 
       const addCredentialDto2 = new AddCredentialDto();
       addCredentialDto2.id = 2;
-      addCredentialDto2.iv = 'iv';
       addCredentialDto2.data = 'data';
 
       const addCredentialArrayDto = new AddCredentialArrayDto();
@@ -95,12 +92,10 @@ describe('Dto Credential Validate', () => {
     it('valid data', async () => {
       const updateCredentialDto = new UpdateCredentialDto();
       updateCredentialDto.id = 'qwerty';
-      updateCredentialDto.iv = 'iv';
       updateCredentialDto.data = 'data';
 
       const updateCredentialDto2 = new UpdateCredentialDto();
       updateCredentialDto2.id = 'qwerty';
-      updateCredentialDto2.iv = 'iv';
       updateCredentialDto2.data = 'data';
 
       const updateCredentialArrayDto = new UpdateCredentialArrayDto();
@@ -126,7 +121,6 @@ describe('Dto Credential Validate', () => {
 
       const updateCredentialDto2 = new UpdateCredentialDto();
       updateCredentialDto2.id = 'qwerty';
-      updateCredentialDto2.iv = 'iv';
       updateCredentialDto2.data = 'data';
 
       const updateCredentialArrayDto = new UpdateCredentialArrayDto();

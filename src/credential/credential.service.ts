@@ -15,10 +15,9 @@ export class CredentialService {
 
   async addCredentials(credentials: AddCredentialDto[], userId: number, timestamp: Date) {
     const promises = credentials.map(
-      async ({ id, iv, data }): Promise<{ id: number; uuid: string }> => {
+      async ({ id, data }): Promise<{ id: number; uuid: string }> => {
         const credentialObject = this.credentialRepository.create({
           userId,
-          iv,
           data,
           lastModified: timestamp,
         });
@@ -31,8 +30,8 @@ export class CredentialService {
 
   async updateCredentials(credentials: UpdateCredentialDto[], userId: number, timestamp: Date) {
     const promises = credentials.map(
-      async ({ id, iv, data }): Promise<void> => {
-        await this.credentialRepository.update({ id, userId }, { iv, data, lastModified: timestamp });
+      async ({ id, data }): Promise<void> => {
+        await this.credentialRepository.update({ id, userId }, { data, lastModified: timestamp });
       },
     );
     await Promise.all(promises);

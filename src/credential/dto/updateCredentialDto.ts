@@ -8,10 +8,6 @@ export class UpdateCredentialDto {
 
   @IsString()
   @IsNotEmpty()
-  iv: string;
-
-  @IsString()
-  @IsNotEmpty()
   data: string;
 }
 

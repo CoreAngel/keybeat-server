@@ -10,7 +10,6 @@ describe('CredentialService', () => {
   const credentialEntity = {
     id: 'qwerty',
     userId: 1,
-    iv: 'iv',
     data: 'data',
     lastModified: new Date(),
   };
@@ -36,12 +35,10 @@ describe('CredentialService', () => {
         [
           {
             id: 1,
-            iv: 'iv',
             data: 'data',
           },
           {
             id: 1,
-            iv: 'iv',
             data: 'data',
           },
         ],
@@ -72,12 +69,10 @@ describe('CredentialService', () => {
       const credentials = [
         {
           id: 'query1',
-          iv: 'iv',
           data: 'data',
         },
         {
           id: 'query2',
-          iv: 'iv',
           data: 'data',
         },
       ];

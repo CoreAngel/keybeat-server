@@ -9,10 +9,6 @@ export class AddCredentialDto {
 
   @IsString()
   @IsNotEmpty()
-  iv: string;
-
-  @IsString()
-  @IsNotEmpty()
   data: string;
 }
 

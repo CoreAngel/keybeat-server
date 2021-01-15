@@ -127,9 +127,9 @@ describe('AuthController', () => {
     it('should throw error cuz password not changed', async () => {
       authServiceMock.verifyPassword.mockResolvedValue(true);
       authServiceMock.resetPassword.mockResolvedValue(0);
-      await expect(authController.resetPassword(userEntityMock, resetPassword, '222.222.222.222')).rejects.toStrictEqual(
-        new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR),
-      );
+      await expect(
+        authController.resetPassword(userEntityMock, resetPassword, '222.222.222.222'),
+      ).rejects.toStrictEqual(new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR));
     });
 
     it('should change password', async () => {
@@ -183,7 +183,7 @@ describe('AuthController', () => {
       await expect(result).toMatchObject({
         uri,
         secret: generateToptKeysMock.toptSecret,
-        reset: `${userEntityMock.login}-${generateToptKeysMock.toptReset}`,
+        reset: generateToptKeysMock.toptReset,
       });
     });
   });

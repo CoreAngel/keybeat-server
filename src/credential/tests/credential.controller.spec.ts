@@ -16,7 +16,6 @@ describe('CredentialController', () => {
   const credentialEntity = {
     id: 'qwerty',
     userId: 1,
-    iv: 'iv',
     data: 'data',
     lastModified: new Date(),
   };
@@ -47,7 +46,7 @@ describe('CredentialController', () => {
       credentialServiceMock.addCredentials.mockResolvedValue([mappedAddedEntity]);
       userServiceMock.updateModificationDate.mockImplementation(() => null);
       const items: AddCredentialArrayDto = {
-        items: [{ id: 1, iv: 'iv', data: 'data' }],
+        items: [{ id: 1, data: 'data' }],
       };
       const result = await credentialController.addCredential(userEntityMock, items);
       expect(result).toMatchObject({ items: [mappedAddedEntity] });
@@ -59,7 +58,7 @@ describe('CredentialController', () => {
       credentialServiceMock.updateCredentials.mockResolvedValue(undefined);
       userServiceMock.updateModificationDate.mockImplementation(() => null);
       const items: UpdateCredentialArrayDto = {
-        items: [{ id: 'qwerty', iv: 'iv', data: 'data' }],
+        items: [{ id: 'qwerty', data: 'data' }],
       };
       await expect(credentialController.updateCredential(userEntityMock, items)).resolves.not.toThrow();
     });
@@ -112,7 +111,6 @@ describe('CredentialController', () => {
       expect(result.modified).toHaveLength(1);
       expect(result.modified[0]).toMatchObject({
         id: credentialEntity.id,
-        iv: credentialEntity.iv,
         data: credentialEntity.data,
       });
       expect(result.deleted).toHaveLength(0);
