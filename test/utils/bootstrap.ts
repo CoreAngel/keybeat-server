@@ -8,6 +8,7 @@ import { ForceGuardModule } from '../../src/forceGuard/forceGuard.module';
 import { CredentialModule } from '../../src/credential/credential.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Test } from '@nestjs/testing';
+import * as requestIp from 'request-ip';
 
 @Module({
   imports: [
@@ -57,5 +58,6 @@ export const bootstrap = async (): Promise<INestApplication> => {
   }).compile();
   const app = moduleFixture.createNestApplication();
   app.useGlobalPipes(new ValidationPipe());
+  app.use(requestIp.mw());
   return app;
 };

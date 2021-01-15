@@ -14,7 +14,8 @@ export const registerDto: RegisterDto = {
 export const userEntity: UserEntity = {
   name: 'user',
   login: 'login',
-  password: '$2b$10$UNXCEMGIUFbGgXUALkAxIO/AZ1dTQtTr11RW9l4qn/xspeOlO7YAi',
+  password:
+    '3773867997184d6e:d44519d0107b0e798080b0f09696b2735af7786b9842b9c7715e26e64907c0f97a22893a5114b4d506ec851421565e0c34c604e6b16021f63b24c313e6c93e9d',
   salt: 'salt',
   toptSecret: 'M5PTII3UDJ3TUAZI',
   toptReset: 'login-ba157e0ab94de8b9ecb21e57faed5202081fcc7f9b00beb2',

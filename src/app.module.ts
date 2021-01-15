@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from '@hapi/joi';
 import { DatabaseModule } from './database/database.module';
@@ -7,6 +7,11 @@ import { AuthModule } from './auth/auth.module';
 import { TokenModule } from './token/token.module';
 import { ForceGuardModule } from './forceGuard/forceGuard.module';
 import { CredentialModule } from './credential/credential.module';
+import { EncryptionModule } from './encryption/encryption.module';
+import { EncryptionMiddleware } from './encryption/encryption.middleware';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
+import { EncryptionInterceptor } from './encryption/encryption.interceptor';
+import { EncryptionFilter } from './encryption/encryption.filter';
 
 @Module({
   imports: [
@@ -22,6 +27,7 @@ import { CredentialModule } from './credential/credential.module';
         JWT_EXPIRATION_TIME: Joi.number().required(),
         BAN_TIME: Joi.number().required(),
         INVALID_ACTIONS_TIME: Joi.number().required(),
+        RSA_PRIVATE_KEY: Joi.string().required(),
       }),
     }),
     DatabaseModule,
@@ -30,8 +36,22 @@ import { CredentialModule } from './credential/credential.module';
     TokenModule,
     ForceGuardModule,
     CredentialModule,
+    EncryptionModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: EncryptionInterceptor,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: EncryptionFilter,
+    },
+  ],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(EncryptionMiddleware).forRoutes({ path: '*', method: RequestMethod.ALL });
+  }
+}

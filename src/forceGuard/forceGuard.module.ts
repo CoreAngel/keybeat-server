@@ -4,16 +4,16 @@ import { InvalidActionEntity } from './invalidAction.entity';
 import { BanEntity } from './ban.entity';
 import { ForceGuardService } from './forceGuard.service';
 import { ConfigModule } from '@nestjs/config';
-import { APP_FILTER } from '@nestjs/core';
-import { UnauthorizedExceptionFilter } from './unauthorizedException.filter';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { UnauthorizedExceptionInterceptor } from './unauthorizedException.interceptor';
 
 @Module({
   imports: [ConfigModule, TypeOrmModule.forFeature([InvalidActionEntity, BanEntity])],
   providers: [
     ForceGuardService,
     {
-      provide: APP_FILTER,
-      useClass: UnauthorizedExceptionFilter,
+      provide: APP_INTERCEPTOR,
+      useClass: UnauthorizedExceptionInterceptor,
     },
   ],
   exports: [ForceGuardService],

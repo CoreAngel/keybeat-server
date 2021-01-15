@@ -14,6 +14,7 @@ import { ForceGuardService } from '../forceGuard/forceGuard.service';
 import { ActionType } from '../forceGuard/actionType.enum';
 import { UnauthorizedException } from '../forceGuard/unauthorized.exception';
 import { IpAddress } from '../decorators/ipAddress.decorator';
+import { SaltDto } from './dto/saltDto';
 
 interface RegisterResponse {
   uri: string;
@@ -23,6 +24,10 @@ interface RegisterResponse {
 
 interface LoginResponse {
   auth: string;
+}
+
+interface SaltResponse {
+  salt: string;
 }
 
 @Controller('auth')
@@ -66,6 +71,25 @@ export class AuthController {
     await this.tokenService.addToken(user, ip, tokenJwt);
     return {
       auth: tokenJwt,
+    };
+  }
+
+  @HttpCode(200)
+  @Post('salt')
+  async salt(@Body() saltDto: SaltDto, @IpAddress() ip: string): Promise<SaltResponse> {
+    await this.forceGuardService.checkIsBaned(ip, ActionType.LOGIN);
+
+    const user = await this.authService.verifyUser(saltDto.login);
+    if (!user) {
+      throw new UnauthorizedException('Wrong credentials provided', ActionType.LOGIN);
+    }
+    const isValid = await this.authService.verifyToken(saltDto.token, user.toptSecret);
+    if (!isValid) {
+      throw new UnauthorizedException('Wrong credentials provided', ActionType.LOGIN);
+    }
+
+    return {
+      salt: user.salt,
     };
   }
 
@@ -118,7 +142,7 @@ export class AuthController {
     return {
       uri,
       secret: toptSecret,
-      reset: `${user.login}-${toptReset}`,
+      reset: toptReset,
     };
   }
 }
