@@ -3,7 +3,6 @@ import { AuthService } from '../auth.service';
 import { UserService } from '../../user/user.service';
 import { inputRegisterUser, userEntity } from '../../utils/user.mock';
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { hashSync } from 'bcrypt';
 import { authenticator } from 'otplib';
 import { userServiceMock } from '../../utils/userService.mock';
 
@@ -89,7 +88,7 @@ describe('AuthService', () => {
   describe('VerifyPassword', () => {
     it('should password match', async () => {
       const password = 'superSecretPassword';
-      const hash = hashSync(password, 0);
+      const hash = await authService.hashPassword(password);
       const result = await authService.verifyPassword(password, hash);
       expect(result).toBe(true);
     });
@@ -97,7 +96,7 @@ describe('AuthService', () => {
     it('should password dont match', async () => {
       const password = 'superSecretPassword';
       const otherPassword = 'superSecretPassword2';
-      const hash = hashSync(password, 0);
+      const hash = await authService.hashPassword(password);
       const result = await authService.verifyPassword(otherPassword, hash);
       expect(result).toBe(false);
     });

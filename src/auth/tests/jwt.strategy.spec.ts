@@ -21,6 +21,7 @@ describe('JwtStrategy', () => {
       auth: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjF9.8lSCknTnRANlJ0AVzCgO2yF838WYA7bLaAR7vAKnofo',
     },
     ip: '245.176.56.219',
+    clientIp: '245.176.56.219',
   } as Request;
 
   const userEntity = userEntityMock;

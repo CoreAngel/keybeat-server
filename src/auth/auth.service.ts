@@ -1,10 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { authenticator } from 'otplib';
-import * as qrcode from 'qrcode';
+import { scryptSync } from 'crypto';
 import { UserService } from '../user/user.service';
 import { RegisterDto } from './dto/registerDto';
-import { randomHexString } from '../libs/src/utils';
-import { bcrypt, bcryptCompare } from '../libs/src/crypto';
+import { randomHexString } from '../libs/src/functions/utils';
 import { PostgresErrorCode } from '../database/postgresErrorCodes.enum';
 import { UserEntity } from '../user/user.entity';
 
@@ -17,7 +16,9 @@ export class AuthService {
   }
 
   async hashPassword(password: string) {
-    return bcrypt(password, 10);
+    const salt = randomHexString();
+    const hash = scryptSync(password, salt, 64).toString('hex');
+    return `${salt}:${hash}`;
   }
 
   async generateToptKeys() {
@@ -77,7 +78,9 @@ export class AuthService {
   }
 
   async verifyPassword(password: string, hash: string): Promise<boolean> {
-    return bcryptCompare(password, hash);
+    const [salt, hashPasswd] = hash.split(':');
+    const derivedKey = scryptSync(password, salt, 64).toString('hex');
+    return derivedKey === hashPasswd;
   }
 
   async verifyToken(token: string, secret: string): Promise<boolean> {
