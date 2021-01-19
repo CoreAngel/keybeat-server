@@ -20,7 +20,6 @@ interface SynchronizeCredentialResponse {
   date: number;
   modified: {
     id: string;
-    iv: string;
     data: string;
   }[];
   deleted: string[];
@@ -86,7 +85,7 @@ export class CredentialController {
     }
 
     const modifiedItem = await this.credentialService.findModifiedCredentials(user.id, dateNow);
-    const modifiedItemFiltered = modifiedItem.map(({ id, iv, data }) => ({ id, iv, data }));
+    const modifiedItemFiltered = modifiedItem.map(({ id, data }) => ({ id, data }));
     const deletedItemIds = await this.credentialService.checkCredentialsExists(ids, user.id);
     return {
       date: dateNow.getTime(),
