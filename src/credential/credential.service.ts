@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { AddCredentialDto } from './dto/addCredentialDto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LessThan, Repository } from 'typeorm';
+import { MoreThan, Repository } from 'typeorm';
+import { format } from 'date-fns';
 import { CredentialEntity } from './credential.entity';
 import { UpdateCredentialDto } from './dto/updateCredentialDto';
 import { DeleteCredentialDto } from './dto/deleteCredentialDto';
@@ -15,7 +16,7 @@ export class CredentialService {
 
   async addCredentials(credentials: AddCredentialDto[], userId: number, timestamp: Date) {
     const promises = credentials.map(
-      async ({ id, data }): Promise<{ id: number; uuid: string }> => {
+      async ({ id, data }): Promise<{ id: string; uuid: string }> => {
         const credentialObject = this.credentialRepository.create({
           userId,
           data,
@@ -50,7 +51,7 @@ export class CredentialService {
     return await this.credentialRepository.find({
       where: {
         userId,
-        lastModified: LessThan(date),
+        lastModified: MoreThan(format(date, 'yyyy-mm-dd HH:MM:ss')),
       },
     });
   }

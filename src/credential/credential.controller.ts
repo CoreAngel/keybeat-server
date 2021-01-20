@@ -11,7 +11,7 @@ import { SynchronizeCredentialDto } from './dto/synchronizeCredentialDto';
 
 interface AddCredentialResponse {
   items: {
-    id: number;
+    id: string;
     uuid: string;
   }[];
 }
@@ -76,6 +76,7 @@ export class CredentialController {
     @Body() { ids, lastSynchronizedDate }: SynchronizeCredentialDto,
   ): Promise<SynchronizeCredentialResponse> {
     const dateNow = new Date();
+    const synchroDate = new Date(lastSynchronizedDate);
     if (user.lastModified.getTime() <= lastSynchronizedDate) {
       return {
         date: dateNow.getTime(),
@@ -83,8 +84,7 @@ export class CredentialController {
         deleted: [],
       };
     }
-
-    const modifiedItem = await this.credentialService.findModifiedCredentials(user.id, dateNow);
+    const modifiedItem = await this.credentialService.findModifiedCredentials(user.id, synchroDate);
     const modifiedItemFiltered = modifiedItem.map(({ id, data }) => ({ id, data }));
     const deletedItemIds = await this.credentialService.checkCredentialsExists(ids, user.id);
     return {

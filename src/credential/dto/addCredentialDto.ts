@@ -1,11 +1,10 @@
-import { IsString, IsNotEmpty, IsInt, Min, ValidateNested } from 'class-validator';
+import { IsString, IsNotEmpty, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class AddCredentialDto {
-  @IsInt()
-  @Min(0)
+  @IsString()
   @IsNotEmpty()
-  id: number;
+  id: string;
 
   @IsString()
   @IsNotEmpty()

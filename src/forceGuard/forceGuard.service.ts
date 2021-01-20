@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { InvalidActionEntity } from './invalidAction.entity';
 import { Repository } from 'typeorm';
@@ -44,21 +44,7 @@ export class ForceGuardService {
       .getCount();
   }
 
-  async checkIsBaned(ip: string, type: ActionType) {
-    const timeOffset = this.configService.get<number>('BAN_TIME');
-    const result = await this.banRepository
-      .createQueryBuilder()
-      .where('ip = :ip and type = :type', { ip, type })
-      .orderBy('date', 'DESC')
-      .getOne();
-
-    if (!result) {
-      return;
-    }
-
-    const isBanned = Date.now() < result.date.getTime() + timeOffset * 1000;
-    if (isBanned) {
-      throw new HttpException('Your ip is banned', HttpStatus.UNAUTHORIZED);
-    }
+  async getNewestBan(ip: string): Promise<BanEntity | undefined> {
+    return this.banRepository.findOne({ ip }, { order: { date: 'DESC' } });
   }
 }

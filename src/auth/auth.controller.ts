@@ -10,7 +10,6 @@ import { User } from '../decorators/user.decorator';
 import { UserEntity } from '../user/user.entity';
 import { ResetPasswordDto } from './dto/resetPasswordDto';
 import { ResetToptDto } from './dto/resetToptDto';
-import { ForceGuardService } from '../forceGuard/forceGuard.service';
 import { ActionType } from '../forceGuard/actionType.enum';
 import { UnauthorizedException } from '../forceGuard/unauthorized.exception';
 import { IpAddress } from '../decorators/ipAddress.decorator';
@@ -23,6 +22,7 @@ interface RegisterResponse {
 }
 
 interface LoginResponse {
+  name: string;
   auth: string;
 }
 
@@ -32,11 +32,7 @@ interface SaltResponse {
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly tokenService: TokenService,
-    private readonly forceGuardService: ForceGuardService,
-  ) {}
+  constructor(private readonly authService: AuthService, private readonly tokenService: TokenService) {}
 
   @Post('register')
   async register(@Body() createUser: RegisterDto): Promise<RegisterResponse> {
@@ -45,15 +41,13 @@ export class AuthController {
     return {
       uri,
       secret: user.toptSecret,
-      reset: `${user.login}-${user.toptReset}`,
+      reset: user.toptReset,
     };
   }
 
   @HttpCode(200)
   @Post('login')
   async login(@Body() loginUser: LoginDto, @IpAddress() ip: string): Promise<LoginResponse> {
-    await this.forceGuardService.checkIsBaned(ip, ActionType.LOGIN);
-
     const user = await this.authService.verifyUser(loginUser.login);
     if (!user) {
       throw new UnauthorizedException('Wrong credentials provided', ActionType.LOGIN);
@@ -70,15 +64,14 @@ export class AuthController {
     const tokenJwt = await this.tokenService.createToken(user);
     await this.tokenService.addToken(user, ip, tokenJwt);
     return {
+      name: user.name,
       auth: tokenJwt,
     };
   }
 
   @HttpCode(200)
   @Post('salt')
-  async salt(@Body() saltDto: SaltDto, @IpAddress() ip: string): Promise<SaltResponse> {
-    await this.forceGuardService.checkIsBaned(ip, ActionType.LOGIN);
-
+  async salt(@Body() saltDto: SaltDto): Promise<SaltResponse> {
     const user = await this.authService.verifyUser(saltDto.login);
     if (!user) {
       throw new UnauthorizedException('Wrong credentials provided', ActionType.LOGIN);
@@ -103,13 +96,7 @@ export class AuthController {
   @UseGuards(JwtGuard)
   @HttpCode(200)
   @Patch('reset/password')
-  async resetPassword(
-    @User() user: UserEntity,
-    @Body() resetDto: ResetPasswordDto,
-    @IpAddress() ip: string,
-  ): Promise<void> {
-    await this.forceGuardService.checkIsBaned(ip, ActionType.RESET_PASSWORD);
-
+  async resetPassword(@User() user: UserEntity, @Body() resetDto: ResetPasswordDto): Promise<void> {
     const isMatching = await this.authService.verifyPassword(resetDto.password, user.password);
     if (!isMatching) {
       throw new UnauthorizedException('Wrong credentials provided', ActionType.RESET_PASSWORD);
@@ -122,9 +109,7 @@ export class AuthController {
 
   @HttpCode(200)
   @Patch('reset/2fa')
-  async reset2Fa(@Body() resetDto: ResetToptDto, @IpAddress() ip: string): Promise<RegisterResponse> {
-    await this.forceGuardService.checkIsBaned(ip, ActionType.RESET_2FA);
-
+  async reset2Fa(@Body() resetDto: ResetToptDto): Promise<RegisterResponse> {
     const user = await this.authService.verifyUser(resetDto.login);
     if (!user) {
       throw new UnauthorizedException('Wrong credentials provided', ActionType.RESET_2FA);

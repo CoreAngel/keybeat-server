@@ -8,7 +8,6 @@ import { TokenPayload } from '../../token/tokenPayload';
 import { TokenService } from '../../token/token.service';
 import { ActionType } from '../../forceGuard/actionType.enum';
 import { UnauthorizedException } from '../../forceGuard/unauthorized.exception';
-import { ForceGuardService } from '../../forceGuard/forceGuard.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -16,7 +15,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     private readonly configService: ConfigService,
     private readonly userService: UserService,
     private readonly tokenService: TokenService,
-    private readonly forceGuardService: ForceGuardService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromBodyField('auth'),
@@ -29,8 +27,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(request: Request, payload: TokenPayload) {
     const token = request.body['auth'];
     const ip = request.clientIp;
-
-    await this.forceGuardService.checkIsBaned(ip, ActionType.JWT);
 
     const user = await this.userService.getUserById(payload.userId);
     if (!user) {

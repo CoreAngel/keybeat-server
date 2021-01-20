@@ -10,17 +10,25 @@ export class EncryptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const res = ctx.getResponse<Response>();
     const status = exception.getStatus();
+
+    const errResponse = exception.getResponse();
+    let message;
+    if (status === 400) {
+      message = typeof errResponse === 'string' ? errResponse : (errResponse as any).message;
+    } else {
+      message = exception.message;
+    }
     const data = {
       statusCode: status,
-      message: exception.message,
+      message: message,
     };
 
     if (status === HttpStatus.NOT_ACCEPTABLE) {
-      return res.status(status).json(data);
+      res.status(status).json(data);
+    } else {
+      const pubPemBase64 = ctx.getRequest<Request>().body.key;
+      const encryptedData = await this.encryptionService.encrypt(data, pubPemBase64);
+      res.status(status).json(encryptedData);
     }
-
-    const pubPemBase64 = ctx.getRequest<Request>().body.key;
-    const encryptedData = this.encryptionService.encrypt(data, pubPemBase64);
-    res.status(status).send(encryptedData);
   }
 }

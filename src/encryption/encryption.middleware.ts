@@ -6,7 +6,7 @@ import { EncryptionService } from './encryption.service';
 export class EncryptionMiddleware implements NestMiddleware {
   constructor(private encryptionService: EncryptionService) {}
   async use(req: Request, res: Response, next: NextFunction) {
-    if (typeof req.body !== 'string') {
+    if (typeof req.body.key != 'string' || typeof req.body.data != 'string') {
       throw new HttpException('Wrong data type', HttpStatus.NOT_ACCEPTABLE);
     }
     try {
@@ -15,7 +15,7 @@ export class EncryptionMiddleware implements NestMiddleware {
       throw new HttpException('Invalid request data', HttpStatus.NOT_ACCEPTABLE);
     }
 
-    if (typeof req.body.key !== 'string' || req.body.key.length > 0) {
+    if (typeof req.body.key !== 'string' || req.body.key.length === 0) {
       throw new HttpException('RSA public key required', HttpStatus.NOT_ACCEPTABLE);
     }
 
