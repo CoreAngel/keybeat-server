@@ -13,7 +13,7 @@ export default class ForceGuardGuard implements CanActivate {
     const timeOffset = this.configService.get<number>('BAN_TIME');
     const result = await this.forceGuardService.getNewestBan(ip);
     if (!result) {
-      return;
+      return true;
     }
 
     const isBanned = Date.now() < result.date.getTime() + timeOffset * 1000;
